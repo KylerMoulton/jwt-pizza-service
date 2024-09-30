@@ -4,7 +4,6 @@ const { Role, DB } = require('../database/database.js');
 
 let testUser;
 let testUserAuthToken;
-let adminUserToken;
 let testUserId;
 
 function randomName() {
@@ -34,11 +33,11 @@ beforeAll(async () => {
 
   // Create an admin user for testing admin-only routes
   const adminUser = await createAdminUser();
+  // eslint-disable-next-line no-unused-vars
   const loginRes = await request(app).put('/api/auth').send({
     email: adminUser.email,
     password: 'toomanysecrets',
   });
-  adminUserToken = loginRes.body.token;
 });
   
 // Test for user registration
@@ -69,7 +68,7 @@ test('login', async () => {
   const loginRes = await request(app).put('/api/auth').send(testUser);
   expect(loginRes.status).toBe(200);
   expect(loginRes.body.token).toMatch(/^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/);
-
+  // eslint-disable-next-line no-unused-vars
   const { password, ...user } = { ...testUser, roles: [{ role: 'diner' }] };
   expect(loginRes.body.user).toMatchObject(user);
 });
