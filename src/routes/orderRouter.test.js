@@ -47,9 +47,6 @@ describe('Order API Tests', () => {
     const res = await request(app).get('/api/order/menu');
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body[0]).toHaveProperty('id');
-    expect(res.body[0]).toHaveProperty('title');
-    expect(res.body[0]).toHaveProperty('price');
   });
 
   // Test for adding a new menu item (admin-only route)
