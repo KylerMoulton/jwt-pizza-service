@@ -10,21 +10,21 @@ while true; do
   total_get=$((total_get + RANDOM % 5 + 1))
   curl -X GET "http://localhost:3000/hello/Torkel"
   
-  # Sleep for a random duration between 10-20 seconds
-  sleep $((RANDOM % 10 + 10))
+  # Sleep for a random duration between 10-12 seconds
+  sleep $((RANDOM % 10 + 2))
   
   # Simulate POST request
   total_post=$((total_post + RANDOM % 5 + 1))
   curl -X POST -H "Content-Type: application/json" \
        -d '{"newGreeting":"Hi"}' "http://localhost:3000/greeting"
   
-  # Sleep for a random duration between 10-20 seconds
-  sleep $((RANDOM % 10 + 10))
+  # Sleep for a random duration between 10-12 seconds
+  sleep $((RANDOM % 10 + 2))
   
   # Simulate DELETE request
   total_delete=$((total_delete + RANDOM % 5 + 1))
   curl -X DELETE "http://localhost:3000/greeting"
   
-  # Sleep for a random duration between 10-20 seconds
-  sleep $((RANDOM % 10 + 10))
+  # Sleep for a random duration between 10-12 seconds
+  sleep $((RANDOM % 10 + 2))
 done

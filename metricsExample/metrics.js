@@ -8,6 +8,9 @@ class Metrics {
     const timer = setInterval(() => {
       Object.keys(this.totalRequestsByMethod).forEach((method) => {
         this.sendMetricToGrafana('request', method, 'total', this.totalRequestsByMethod[method]);
+        this.sendMetricToGrafana('request', method, 'GET', this.totalRequestsByMethod[method]);
+        this.sendMetricToGrafana('request', method, 'POST', this.totalRequestsByMethod[method]);
+        this.sendMetricToGrafana('request', method, 'DELETE', this.totalRequestsByMethod[method]);
       });
     }, 10000);
     timer.unref();
