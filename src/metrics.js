@@ -9,7 +9,8 @@ class Metrics {
     this.pizzasSold = 0;
     this.creationFailures = 0;
     this.revenue = 0;
-    this.latency = 0;
+    this.latency = 0; // General service latency
+    this.pizzaCreationLatency = 0; // Pizza creation latency
 
     const timer = setInterval(() => {
       this.sendMetricsToGrafana();
@@ -54,9 +55,14 @@ class Metrics {
     this.creationFailures++;
   }
 
-  // Track service latency
+  // Track general service latency
   trackLatency(duration) {
     this.latency = duration;
+  }
+
+  // Track pizza creation latency
+  trackPizzaCreationLatency(duration) {
+    this.pizzaCreationLatency = duration;
   }
 
   // Get system metrics (CPU & Memory)
@@ -85,6 +91,7 @@ class Metrics {
     this.sendMetricToGrafana('pizza', 'revenue', 'total', this.revenue);
     this.sendMetricToGrafana('pizza', 'failure', 'total', this.creationFailures);
     this.sendMetricToGrafana('latency', 'service', 'ms', this.latency);
+    this.sendMetricToGrafana('latency', 'pizza_creation', 'ms', this.pizzaCreationLatency); // Pizza latency
     this.sendMetricToGrafana('system', 'cpu', 'usage', this.getCpuUsagePercentage());
     this.sendMetricToGrafana('system', 'memory', 'usage', this.getMemoryUsagePercentage());
   }
@@ -113,8 +120,6 @@ class Metrics {
       });
   }
 }
-
-const metrics = new Metrics();
 
 // Middleware to track requests for all routers
 const requestTracker = async (req, res, next) => {
@@ -149,7 +154,7 @@ const authMetricsTracker = (req, res, next) => {
   next();
 };
 
-// Middleware for orderRouter to track pizza sales
+// Middleware for orderRouter to track pizza sales and latency
 const orderMetricsTracker = (req, res, next) => {
   res.on('finish', () => {
     if (req.method === 'POST' && res.statusCode === 201) {
@@ -157,6 +162,10 @@ const orderMetricsTracker = (req, res, next) => {
       order.items.forEach((item) => {
         metrics.incrementPizzaMetrics(item.price);
       });
+      
+      // Track latency specifically for pizza creation
+      const duration = Date.now() - req._startTime;
+      metrics.trackPizzaCreationLatency(duration);
     } else {
       metrics.incrementPizzaFailures();
     }
