@@ -1,4 +1,3 @@
-const { httpLogger, dbLogger, factoryLogger, unhandledErrorLogger } = require('pizza-logger');
 const config = require('./config.js');
 
 class Logger {
