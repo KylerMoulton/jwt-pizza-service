@@ -4,9 +4,10 @@ const os = require('os');
 class Metrics {
   constructor() {
     this.totalRequestsByMethod = { GET: 0, POST: 0, PUT: 0, DELETE: 0 };
-    this.activeUsers = 0;
+    this.activeUsers = 1;
     this.authAttempts = { success: 0, failed: 0 };
     this.pizzasSold = 0;
+    this.creationFailures = 0;
     this.revenue = 0;
     this.latency = 0;
 
@@ -49,6 +50,10 @@ class Metrics {
     this.revenue += pizzaPrice;
   }
 
+  incrementPizzaFailures() {
+    this.creationFailures++;
+  }
+
   // Track service latency
   trackLatency(duration) {
     this.latency = duration;
@@ -78,6 +83,7 @@ class Metrics {
     this.sendMetricToGrafana('users', 'activity', 'active_users', this.activeUsers);
     this.sendMetricToGrafana('pizza', 'sold', 'total', this.pizzasSold);
     this.sendMetricToGrafana('pizza', 'revenue', 'total', this.revenue);
+    this.sendMetricToGrafana('pizza', 'failure', 'total', this.creationFailures);
     this.sendMetricToGrafana('latency', 'service', 'ms', this.latency);
     this.sendMetricToGrafana('system', 'cpu', 'usage', this.getCpuUsagePercentage());
     this.sendMetricToGrafana('system', 'memory', 'usage', this.getMemoryUsagePercentage());
@@ -151,6 +157,8 @@ const orderMetricsTracker = (req, res, next) => {
       order.items.forEach((item) => {
         metrics.incrementPizzaMetrics(item.price);
       });
+    } else {
+      metrics.incrementPizzaFailures();
     }
   });
 
