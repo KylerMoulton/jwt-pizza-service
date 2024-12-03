@@ -175,7 +175,7 @@ const orderMetricsTracker = (req, res, next) => {
 };
 
 module.exports = {
-  metrics,
+  Metrics,
   requestTracker,
   authMetricsTracker,
   orderMetricsTracker,
