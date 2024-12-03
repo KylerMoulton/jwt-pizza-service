@@ -35,12 +35,13 @@ const logger = new Logger();
 
 const logHttpRequests = (req, res, next) => {
   res.on('finish', () => {
-    req.body = logger.sanitizeLogData(...req.body);
+    const body = req.body;
+    const sanitizedBody = logger.sanitizeLogData(body);
     logger.sendLogToGrafana({
       event: 'http-request',
       method: req.method,
       path: req.path,
-      body: req.body,
+      body: sanitizedBody,
       statusCode: res.statusCode,
     });
   })
