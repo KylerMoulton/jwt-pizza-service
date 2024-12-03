@@ -4,7 +4,7 @@ const os = require('os');
 class Metrics {
   constructor() {
     this.totalRequestsByMethod = { GET: 0, POST: 0, PUT: 0, DELETE: 0 };
-    this.activeUsers = 1;
+    this.activeUsers = 0;
     this.authAttempts = { success: 0, failed: 0 };
     this.pizzasSold = 0;
     this.creationFailures = 0;
