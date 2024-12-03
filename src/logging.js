@@ -3,10 +3,6 @@ const config = require('./config.js');
 
 class Logger {
   constructor() {
-    const timer = setInterval(() => {
-      this.sendLogsToGrafana();
-    }, 5000);
-    timer.unref();
   }
 
   sendLogToGrafana(event) {
