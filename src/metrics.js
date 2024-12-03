@@ -1,7 +1,7 @@
 const config = require('./config.js');
 const os = require('os');
 
-class metrics {
+class Metrics {
   constructor() {
     this.totalRequestsByMethod = { GET: 0, POST: 0, PUT: 0, DELETE: 0 };
     this.activeUsers = 1;
@@ -121,6 +121,8 @@ class metrics {
   }
 }
 
+const metrics = new Metrics();
+
 // Middleware to track requests for all routers
 const requestTracker = async (req, res, next) => {
   const method = req.method;
@@ -175,7 +177,7 @@ const orderMetricsTracker = (req, res, next) => {
 };
 
 module.exports = {
-  metrics,
+  Metrics,
   requestTracker,
   authMetricsTracker,
   orderMetricsTracker,
