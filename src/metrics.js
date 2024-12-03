@@ -59,7 +59,6 @@ class Metrics {
 
   // Send all metrics to Grafana
   sendMetricsToGrafana() {
-    const { source, url, userId, apiKey } = config;
 
     // HTTP request count
     Object.keys(this.totalRequestsByMethod).forEach((method) => {
@@ -113,7 +112,6 @@ const metrics = new Metrics();
 // Middleware to track requests for all routers
 const requestTracker = async (req, res, next) => {
   const method = req.method;
-  const endpoint = req.originalUrl;
 
   // Increment request count for the method
   metrics.incrementRequests(method);
