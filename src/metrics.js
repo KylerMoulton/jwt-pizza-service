@@ -144,11 +144,11 @@ const authMetricsTracker = (req, res, next) => {
     const status = res.statusCode === 200 ? 'success' : 'failed';
     metrics.incrementAuthAttempt(status);
 
-    if (req.path.includes('/login') && status === 'success') {
+    if (req.method === 'PUT' && status === 'success') {
       metrics.incrementActiveUsers();
     }
 
-    if (req.path.includes('/logout') && status === 'success') {
+    if (req.method === 'DELETE' && status === 'success') {
       metrics.decrementActiveUsers();
     }
   });
@@ -159,7 +159,7 @@ const authMetricsTracker = (req, res, next) => {
 // Middleware for orderRouter to track pizza sales and latency
 const orderMetricsTracker = (req, res, next) => {
   res.on('finish', () => {
-    if (req.method === 'POST' && res.statusCode === 201) {
+    if (req.method === 'POST' && res.statusCode != 500) {
       const order = req.body;
       order.items.forEach((item) => {
         metrics.incrementPizzaMetrics(item.price);
