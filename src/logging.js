@@ -36,7 +36,6 @@ const logger = new Logger();
 
 const logHttpRequests = (req, res, next) => {
   req.body = logger.sanitizeLogData(req.body);
-  httpLogger(req, res);
   logger.sendLogToGrafana({
     event: 'http-request',
     method: req.method,
@@ -51,7 +50,6 @@ const logDbQuery = (req, res, next) => {
   res.on('finish', () => {
     // Assuming SQL queries are in req.query or similar
     const sqlQuery = req.query.sqlQuery || 'No SQL Query';  // Adjust based on where the query is stored
-    dbLogger(sqlQuery);
     logger.sendLogToGrafana({
       event: 'db-query',
       query: sqlQuery,
@@ -63,7 +61,6 @@ const logDbQuery = (req, res, next) => {
 const logFactoryRequest = (req, res, next) => {
   res.on('finish', () => {
     const orderInfo = req.body || 'No order info';  // Assuming order info is in the request body
-    factoryLogger(orderInfo);
     logger.sendLogToGrafana({
       event: 'factory-request',
       orderInfo: orderInfo,
@@ -73,7 +70,6 @@ const logFactoryRequest = (req, res, next) => {
 }
 
 const logUnhandledError = (err, req, res, next) => {
-  unhandledErrorLogger(err);
   logger.sendLogToGrafana({
     event: 'unhandled-error',
     error: err,
