@@ -33,7 +33,7 @@ class Logger {
 
 const logger = new Logger();
 
-const logHttpRequests = (req, res, next) => {
+const logHttpRequests = async (req, res, next) => {
   req.body = logger.sanitizeLogData(req.body);
   logger.sendLogToGrafana({
     event: 'http-request',
@@ -45,7 +45,7 @@ const logHttpRequests = (req, res, next) => {
   next();
 }
 
-const logDbQuery = (req, res, next) => {
+const logDbQuery = async (req, res, next) => {
   res.on('finish', () => {
     // Assuming SQL queries are in req.query or similar
     const sqlQuery = req.query.sqlQuery || 'No SQL Query';  // Adjust based on where the query is stored
@@ -57,7 +57,7 @@ const logDbQuery = (req, res, next) => {
   next();
 }
 
-const logFactoryRequest = (req, res, next) => {
+const logFactoryRequest = async (req, res, next) => {
   res.on('finish', () => {
     const orderInfo = req.body || 'No order info';  // Assuming order info is in the request body
     logger.sendLogToGrafana({
@@ -68,7 +68,7 @@ const logFactoryRequest = (req, res, next) => {
   next();
 }
 
-const logUnhandledError = (err, req, res, next) => {
+const logUnhandledError = async (err, req, res, next) => {
   logger.sendLogToGrafana({
     event: 'unhandled-error',
     error: err,
