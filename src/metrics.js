@@ -158,6 +158,7 @@ const authMetricsTracker = (req, res, next) => {
 
 // Middleware for orderRouter to track pizza sales and latency
 const orderMetricsTracker = (req, res, next) => {
+  const startTime = Date.now();
   res.on('finish', () => {
     if (req.method === 'POST' && res.statusCode != 500) {
       const order = req.body;
@@ -166,9 +167,9 @@ const orderMetricsTracker = (req, res, next) => {
       });
       
       // Track latency specifically for pizza creation
-      const duration = Date.now() - req._startTime;
+      const duration = Date.now() - startTime;
       metrics.trackPizzaCreationLatency(duration);
-    } else {
+    } else if (req.method === 'POST' && res.statusCode === 500){
       metrics.incrementPizzaFailures();
     }
   });
