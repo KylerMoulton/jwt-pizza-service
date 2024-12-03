@@ -4,12 +4,12 @@ const config = require('../config.js');
 const { asyncHandler } = require('../endpointHelper.js');
 const { DB, Role } = require('../database/database.js');
 const metrics = require('../metrics');
-const { Logger } = require('../logging')
+const logger = require('../logging')
 
 const authRouter = express.Router();
 authRouter.use(metrics.requestTracker);
 authRouter.use(metrics.authMetricsTracker);
-authRouter.use(Logger.logHttpRequests);
+authRouter.use(logger.logHttpRequests);
 
 authRouter.endpoints = [
   {

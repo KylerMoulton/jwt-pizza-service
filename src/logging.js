@@ -34,45 +34,61 @@ class Logger {
     }
     return data;
   }
+}
 
-  logHttpRequests(req, res, next) {
-    req.body = this.sanitizeLogData(req.body);
-    httpLogger(req, res);
-    this.sendLogToGrafana({
-      event: 'http-request',
-      method: req.method,
-      path: req.path,
-      body: req.body,
-      statusCode: res.statusCode,
-    });
-    next();
-  }
+const logger = new Logger();
 
-  logDbQuery(sqlQuery) {
+const logHttpRequests = (req, res, next) => {
+  req.body = logger.sanitizeLogData(req.body);
+  httpLogger(req, res);
+  logger.sendLogToGrafana({
+    event: 'http-request',
+    method: req.method,
+    path: req.path,
+    body: req.body,
+    statusCode: res.statusCode,
+  });
+  next();
+}
+
+const logDbQuery = (req, res, next) => {
+  res.on('finish', () => {
+    // Assuming SQL queries are in req.query or similar
+    const sqlQuery = req.query.sqlQuery || 'No SQL Query';  // Adjust based on where the query is stored
     dbLogger(sqlQuery);
-    this.sendLogToGrafana({
+    logger.sendLogToGrafana({
       event: 'db-query',
       query: sqlQuery,
     });
-  }
+  });
+  next();
+}
 
-  logFactoryRequest(orderInfo) {
+const logFactoryRequest = (req, res, next) => {
+  res.on('finish', () => {
+    const orderInfo = req.body || 'No order info';  // Assuming order info is in the request body
     factoryLogger(orderInfo);
-    this.sendLogToGrafana({
+    logger.sendLogToGrafana({
       event: 'factory-request',
       orderInfo: orderInfo,
     });
-  }
+  });
+  next();
+}
 
-  logUnhandledError(err) {
-    unhandledErrorLogger(err);
-    this.sendLogToGrafana({
-      event: 'unhandled-error',
-      error: err,
-    });
-  }
+const logUnhandledError = (err, req, res, next) => {
+  unhandledErrorLogger(err);
+  logger.sendLogToGrafana({
+    event: 'unhandled-error',
+    error: err,
+  });
+  next();
 }
 
 module.exports = {
   Logger,
+  logHttpRequests,
+  logDbQuery,
+  logFactoryRequest,
+  logUnhandledError
 };
