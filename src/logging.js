@@ -34,14 +34,16 @@ class Logger {
 const logger = new Logger();
 
 const logHttpRequests = (req, res, next) => {
-  req.body = logger.sanitizeLogData(...req.body);
-  logger.sendLogToGrafana({
-    event: 'http-request',
-    method: req.method,
-    path: req.path,
-    body: req.body,
-    statusCode: res.statusCode,
-  });
+  res.on('finish', () => {
+    req.body = logger.sanitizeLogData(...req.body);
+    logger.sendLogToGrafana({
+      event: 'http-request',
+      method: req.method,
+      path: req.path,
+      body: req.body,
+      statusCode: res.statusCode,
+    });
+  })
   next();
 }
 
