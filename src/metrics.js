@@ -1,7 +1,7 @@
 const config = require('./config.js');
 const os = require('os');
 
-class Metrics {
+class metrics {
   constructor() {
     this.totalRequestsByMethod = { GET: 0, POST: 0, PUT: 0, DELETE: 0 };
     this.activeUsers = 1;
@@ -175,7 +175,7 @@ const orderMetricsTracker = (req, res, next) => {
 };
 
 module.exports = {
-  Metrics,
+  metrics,
   requestTracker,
   authMetricsTracker,
   orderMetricsTracker,
