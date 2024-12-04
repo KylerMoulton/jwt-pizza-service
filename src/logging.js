@@ -7,16 +7,14 @@ class Logger {
   sendLogToGrafana(event) {
     const body = JSON.stringify(event);
     fetch(`${config.logging.url}`, {
-      method: 'POST',
+      method: 'post',
       body: body,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${config.logging.userId}:${config.logging.apiKey}`,
       },
     }).then((res) => {
-      if (!res.ok) {
-        console.log('Failed to send log to Grafana');
-      }
+      if (!res.ok) console.log('Failed to send log to Grafana');
     });
   }
 
@@ -36,7 +34,7 @@ class Logger {
   }
   
   log(level, type, logData) {
-    const labels = { component: config.source, level: level, type: type };
+    const labels = { component: config.logging.source, level: level, type: type };
     const values = [this.nowString(), this.sanitizeLogData(logData)];
     const logEvent = { streams: [{ stream: labels, values: [values] }] };
 
