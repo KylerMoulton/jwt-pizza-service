@@ -63,17 +63,12 @@ const logHttpRequests = (req, res, next) => {
   next();
 };
 
-const logDbQuery = (req, res, next) => {
-  res.on('finish', () => {
-    // Assuming SQL queries are in req.query or similar
-    const sqlQuery = req.query.sqlQuery || 'No SQL Query';  // Adjust based on where the query is stored
-    logger.sendLogToGrafana({
-      event: 'db-query',
-      query: sqlQuery,
-    });
-  });
-  next();
-}
+const logDbQuery = (query, params, result) => {
+  const logData = {
+    resBody: JSON.stringify(params),
+  };
+  logger.log('info', 'db', logData);
+};
 
 const logFactoryRequest = (req, res, next) => {
   res.on('finish', () => {

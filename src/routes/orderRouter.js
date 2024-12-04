@@ -4,10 +4,12 @@ const { Role, DB } = require('../database/database.js');
 const { authRouter } = require('./authRouter.js');
 const { asyncHandler, StatusCodeError } = require('../endpointHelper.js');
 const metrics = require('../metrics');
+const logging = require('../logging');
 
 const orderRouter = express.Router();
 orderRouter.use(metrics.requestTracker);
 orderRouter.use(metrics.orderMetricsTracker);
+authRouter.use(logging.logHttpRequests);
 
 orderRouter.endpoints = [
   {
