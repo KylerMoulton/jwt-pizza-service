@@ -85,50 +85,35 @@ orderRouter.post(
     const orderReq = req.body;
     const order = await DB.addDinerOrder(req.user, orderReq);
 
-    // Capture request details for logging
     const factoryReqBody = {
       diner: { id: req.user.id, name: req.user.name, email: req.user.email },
       order,
     };
 
-    let factoryResBody;
-    let factoryStatusCode;
-
-    try {
-      const r = await fetch(`${config.factory.url}/api/order`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: `Bearer ${config.factory.apiKey}`,
-        },
-        body: JSON.stringify(factoryReqBody),
-      });
-
-      factoryResBody = await r.json();
-      factoryStatusCode = r.status;
-
-      if (r.ok) {
-        res.send({ order, jwt: factoryResBody.jwt, reportUrl: factoryResBody.reportUrl });
-      } else {
-        res.status(500).send({ message: 'Failed to fulfill order at factory', reportUrl: factoryResBody.reportUrl });
-      }
-    } catch (err) {
-      factoryStatusCode = 500;
-      factoryResBody = { message: 'Factory request failed' };
-      res.status(500).send(factoryResBody);
-    }
-
-    // Log factory interaction
-    const logData = {
-      authorized: !!req.headers.authorization,
-      path: `${config.factory.url}/api/order`,
+    const r = await fetch(`${config.factory.url}/api/order`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: `Bearer ${config.factory.apiKey}`,
+      },
+      body: JSON.stringify(factoryReqBody),
+    });
+
+    const factoryResBody = await r.json();
+    const factoryStatusCode = r.status;
+
+    const factoryResponseLogData = {
       statusCode: factoryStatusCode,
-      reqBody: JSON.stringify(factoryReqBody),
       resBody: JSON.stringify(factoryResBody),
     };
-    const level = logger.statusToLogLevel(factoryStatusCode);
-    logger.log(level, 'http', logData);
+    const factoryResponseLoggerLevel = logging.statusToLogLevel(factoryStatusCode);
+    logging.log(factoryResponseLoggerLevel, 'http', factoryResponseLogData);
+
+    if (r.ok) {
+      res.send({ order, jwt: factoryResBody.jwt, reportUrl: factoryResBody.reportUrl });
+    } else {
+      res.status(500).send({ message: 'Failed to fulfill order at factory', reportUrl: factoryResBody.reportUrl });
+    }
   })
 );
 
