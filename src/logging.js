@@ -70,17 +70,6 @@ const logDbQuery = (params) => {
   logger.log('info', 'db', logData);
 };
 
-const logFactoryRequest = (req, res, next) => {
-  res.on('finish', () => {
-    const orderInfo = req.body || 'No order info';  // Assuming order info is in the request body
-    logger.sendLogToGrafana({
-      event: 'factory-request',
-      orderInfo: orderInfo,
-    });
-  });
-  next();
-}
-
 const logUnhandledError = (err, req, res, next) => {
   logger.sendLogToGrafana({
     event: 'unhandled-error',
@@ -93,6 +82,5 @@ module.exports = {
   Logger,
   logHttpRequests,
   logDbQuery,
-  logFactoryRequest,
   logUnhandledError
 };
