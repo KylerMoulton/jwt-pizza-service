@@ -20,14 +20,27 @@ class Logger {
     });
   }
 
-  sanitizeLogData(data) {
-    if (data.password) {
-      data.password = '****'; // Mask password
-    }
-    if (data.token) {
-      data.token = '****'; // Mask token
-    }
-    return data;
+  sanitizeLogData(logData) {
+    logData = JSON.stringify(logData);
+    return logData.replace(/\\"password\\":\s*\\"[^"]*\\"/g, '\\"password\\": \\"*****\\"');
+  }
+
+  statusToLogLevel(statusCode) {
+    if (statusCode >= 500) return 'error';
+    if (statusCode >= 400) return 'warn';
+    return 'info';
+  }
+
+  nowString() {
+    return (Math.floor(Date.now()) * 1000000).toString();
+  }
+  
+  log(level, type, logData) {
+    const labels = { component: config.source, level: level, type: type };
+    const values = [this.nowString(), this.sanitizeLogData(logData)];
+    const logEvent = { streams: [{ stream: labels, values: [values] }] };
+
+    this.sendLogToGrafana(logEvent);
   }
 }
 
@@ -35,15 +48,16 @@ const logger = new Logger();
 
 const logHttpRequests = (req, res, next) => {
   res.on('finish', () => {
-    const body = req.body;
-    const sanitizedBody = logger.sanitizeLogData(body);
-    logger.sendLogToGrafana({
-      event: 'http-request',
+    const logData = {
+      authorized: !!req.headers.authorization,
+      path: req.originalUrl,
       method: req.method,
-      path: req.path,
-      body: sanitizedBody,
       statusCode: res.statusCode,
-    });
+      reqBody: JSON.stringify(req.body),
+      resBody: JSON.stringify(resBody),
+    };
+    const level = this.statusToLogLevel(res.statusCode)
+    logger.log(level, 'http', logData);
   })
   next();
 }
