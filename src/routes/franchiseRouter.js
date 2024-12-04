@@ -142,4 +142,6 @@ franchiseRouter.delete(
   })
 );
 
+app.use(logging.logUnhandledError);
+
 module.exports = franchiseRouter;

@@ -71,12 +71,19 @@ const logDbQuery = (params) => {
 };
 
 const logUnhandledError = (err, req, res, next) => {
-  logger.sendLogToGrafana({
-    event: 'unhandled-error',
-    error: err,
-  });
-  next();
-}
+  const logData = {
+    error: err.message,
+    path: req.originalUrl,
+    method: req.method,
+    body: req.body,
+    query: req.query,
+    headers: req.headers,
+  };
+
+  logger.log('error', 'unhandled_error', logData);
+
+  res.status(500).json({ message: 'Internal Server Error' });
+};
 
 module.exports = {
   Logger,
