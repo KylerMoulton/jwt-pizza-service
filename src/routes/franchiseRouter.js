@@ -7,7 +7,7 @@ const logging = require('../logging');
 
 const franchiseRouter = express.Router();
 franchiseRouter.use(metrics.requestTracker);
-authRouter.use(logging.logHttpRequests);
+franchiseRouter.use(logging.logHttpRequests);
 
 franchiseRouter.endpoints = [
   {
@@ -142,6 +142,6 @@ franchiseRouter.delete(
   })
 );
 
-app.use(logging.logUnhandledError);
+franchiseRouter.use(logging.logUnhandledError);
 
 module.exports = franchiseRouter;

@@ -141,5 +141,6 @@ function readAuthToken(req) {
   return null;
 }
 
+authRouter.use(logging.logUnhandledError);
 
 module.exports = { authRouter, setAuthUser };

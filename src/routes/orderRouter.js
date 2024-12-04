@@ -9,7 +9,7 @@ const logging = require('../logging');
 const orderRouter = express.Router();
 orderRouter.use(metrics.requestTracker);
 orderRouter.use(metrics.orderMetricsTracker);
-authRouter.use(logging.logHttpRequests);
+orderRouter.use(logging.logHttpRequests);
 
 orderRouter.endpoints = [
   {
@@ -117,6 +117,6 @@ orderRouter.post(
   })
 );
 
-app.use(logging.logUnhandledError);
+orderRouter.use(logging.logUnhandledError);
 
 module.exports = orderRouter;

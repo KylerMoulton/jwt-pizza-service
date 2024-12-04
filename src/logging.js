@@ -70,7 +70,7 @@ const logDbQuery = (params) => {
   logger.log('info', 'db', logData);
 };
 
-const logUnhandledError = (err, req, res, next) => {
+const logUnhandledError = (err, req, res) => {
   const logData = {
     error: err.message,
     path: req.originalUrl,
