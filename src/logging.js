@@ -47,7 +47,8 @@ class Logger {
 const logger = new Logger();
 
 const logHttpRequests = (req, res, next) => {
-  res.on('finish', () => {
+  let send = res.send;
+  res.send = (resBody) => {
     const logData = {
       authorized: !!req.headers.authorization,
       path: req.originalUrl,
@@ -56,11 +57,13 @@ const logHttpRequests = (req, res, next) => {
       reqBody: JSON.stringify(req.body),
       resBody: JSON.stringify(resBody),
     };
-    const level = this.statusToLogLevel(res.statusCode)
-    logger.log(level, 'http', logData);
-  })
+    const level = this.statusToLogLevel(res.statusCode);
+    this.log(level, 'http', logData);
+    res.send = send;
+    return res.send(resBody);
+  };
   next();
-}
+};
 
 const logDbQuery = (req, res, next) => {
   res.on('finish', () => {
