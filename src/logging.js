@@ -65,7 +65,7 @@ const logHttpRequests = (req, res, next) => {
 
 const logDbQuery = (params) => {
   const logData = {
-    resBody: JSON.stringify(params),
+    reqBody: JSON.stringify(params),
   };
   logger.log('info', 'db', logData);
 };
