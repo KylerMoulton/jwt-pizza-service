@@ -117,6 +117,5 @@ orderRouter.post(
   })
 );
 
-orderRouter.use(logging.logUnhandledError);
 
 module.exports = orderRouter;

@@ -4,6 +4,7 @@ const orderRouter = require('./routes/orderRouter.js');
 const franchiseRouter = require('./routes/franchiseRouter.js');
 const version = require('./version.json');
 const config = require('./config.js');
+const logging = require('./logging');
 
 const app = express();
 app.use(express.json());
@@ -38,14 +39,17 @@ app.get('/', (req, res) => {
 });
 
 app.use('*', (req, res) => {
-  res.status(404).json({
+  const err = {
     message: 'unknown endpoint',
-  });
+  };
+  res.status(404).json(err);
+  logging.logUnhandledError(err,req);
 });
 
 // Default error handler for all exceptions and errors.
 app.use((err, req, res, next) => {
   res.status(err.statusCode ?? 500).json({ message: err.message, stack: err.stack });
+  logging.logUnhandledError(err,req);
   next();
 });
 
