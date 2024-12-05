@@ -70,7 +70,7 @@ const logDbQuery = (params) => {
   logger.log('info', 'db', logData);
 };
 
-const logUnhandledError = (err, req, res) => {
+const logUnhandledError = (err, req, res, next) => {
   const logData = {
     error: err.message,
     path: req.originalUrl,
@@ -83,6 +83,8 @@ const logUnhandledError = (err, req, res) => {
   logger.log('error', 'unhandled_error', logData);
 
   res.status(500).json({ message: 'Internal Server Error' });
+
+  next(err)
 };
 
 module.exports = {
