@@ -83,8 +83,6 @@ const logUnhandledError = (err, req, res, next) => {
   logger.log('error', 'unhandled_error', logData);
 
   res.status(500).json({ message: 'Internal Server Error' });
-
-  next(err)
 };
 
 module.exports = {
