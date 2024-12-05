@@ -70,7 +70,7 @@ const logDbQuery = (params) => {
   logger.log('info', 'db', logData);
 };
 
-const logUnhandledError = (err, req, res, next) => {
+const logUnhandledError = (err, req, res) => {
   const logData = {
     error: err.message,
     path: req.originalUrl,
@@ -81,7 +81,6 @@ const logUnhandledError = (err, req, res, next) => {
   };
 
   logger.log('error', 'unhandled_error', logData);
-
   res.status(500).json({ message: 'Internal Server Error' });
 };
 
