@@ -84,25 +84,16 @@ orderRouter.post(
   asyncHandler(async (req, res) => {
     const orderReq = req.body;
     const order = await DB.addDinerOrder(req.user, orderReq);
-
-    const factoryReqBody = {
-      diner: { id: req.user.id, name: req.user.name, email: req.user.email },
-      order,
-    };
-
     const r = await fetch(`${config.factory.url}/api/order`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Bearer ${config.factory.apiKey}`,
-      },
-      body: JSON.stringify(factoryReqBody),
+      headers: { 'Content-Type': 'application/json', authorization: `Bearer ${config.factory.apiKey}` },
+      body: JSON.stringify({ diner: { id: req.user.id, name: req.user.name, email: req.user.email }, order }),
     });
-
+    const j = await r.json();
     if (r.ok) {
-      res.send({ order, jwt: factoryResBody.jwt, reportUrl: factoryResBody.reportUrl });
+      res.send({ order, jwt: j.jwt, reportUrl: j.reportUrl });
     } else {
-      res.status(500).send({ message: 'Failed to fulfill order at factory', reportUrl: factoryResBody.reportUrl });
+      res.status(500).send({ message: 'Failed to fulfill order at factory', reportUrl: j.reportUrl });
     }
   })
 );
