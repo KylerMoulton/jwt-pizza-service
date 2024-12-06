@@ -99,16 +99,6 @@ orderRouter.post(
       body: JSON.stringify(factoryReqBody),
     });
 
-    const factoryResBody = await r.json();
-    const factoryStatusCode = r.status;
-
-    const factoryResponseLogData = {
-      statusCode: factoryStatusCode,
-      resBody: JSON.stringify(factoryResBody),
-    };
-    const factoryResponseLoggerLevel = logging.statusToLogLevel(factoryStatusCode);
-    logging.log(factoryResponseLoggerLevel, 'http', factoryResponseLogData);
-
     if (r.ok) {
       res.send({ order, jwt: factoryResBody.jwt, reportUrl: factoryResBody.reportUrl });
     } else {
